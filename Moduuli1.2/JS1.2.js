@@ -1,3 +1,3 @@
 `use strict`;
 
-alert (`Hello Roope!`);
+let name = `Roope`;
