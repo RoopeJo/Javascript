@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Tehtävä4.1</title>
+</head>
+<body>
+  <h1>Search TV Show</h1>
+  <form id="searchForm">
+    <input id="query" name="q" type="text" placeholder="Enter TV Show Name">
+    <input type="submit" value="Search">
+  </form>
+
+  <div id="results"></div>
+
+  <script>
+    const form = document.getElementById('searchForm');
+    const resultsDiv = document.getElementById('results');
+
+    form.addEventListener('submit', async function(event) {
+      event.preventDefault();
+
+      const query = document.getElementById('query').value;
+      const url = `https://api.tvmaze.com/search/shows?q=${encodeURIComponent(query)}`;
+
+      try {
+        const response = await fetch(url);
+        const data = await response.json();
+        console.log(data);
+
+
+        resultsDiv.innerHTML = '';
+
+
+        if (data.length === 0) {
+          resultsDiv.innerHTML = '<p>No results found.</p>';
+          return;
+        }
+
+
+        data.forEach(item => {
+          const show = item.show;
+          const showElement = document.createElement('div');
+          showElement.innerHTML = `
+            <h2>${show.name}</h2>
+            ${show.image ? `<img src="${show.image.medium}" alt="${show.name}">` : ''}
+            <p>${show.summary ? show.summary : 'No description available.'}</p>
+            <hr>
+          `;
+          resultsDiv.appendChild(showElement);
+        });
+
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        resultsDiv.innerHTML = '<p>Error fetching data. Please try again later.</p>';
+      }
+    });
+  </script>
+</body>
+</html>
