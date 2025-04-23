@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Tehtävä 4.3</title>
+</head>
+<body>
+
+  <h1>Search for a TV Show</h1>
+
+  <form id="searchForm">
+    <input id="query" name="q" type="text">
+    <input type="submit" value="Search">
+  </form>
+
+  <div id="results"></div>
+
+  <script>
+    const form = document.getElementById('searchForm');
+    const input = document.getElementById('query');
+    const resultsDiv = document.getElementById('results');
+
+    form.addEventListener('submit', async function(event) {
+      event.preventDefault();
+
+      const searchTerm = input.value.trim();
+      if (searchTerm === '') {
+        console.log('Please enter a search term.');
+        return;
+      }
+
+      const url = `https://api.tvmaze.com/search/shows?q=${encodeURIComponent(searchTerm)}`;
+
+      try {
+        const response = await fetch(url);
+        const data = await response.json();
+
+        resultsDiv.innerHTML = '';
+        data.forEach(tvShow => {
+          const show = tvShow.show;
+
+          const article = document.createElement('article');
+
+          const title = document.createElement('h2');
+          title.textContent = show.name;
+          article.appendChild(title);
+
+          const link = document.createElement('a');
+          link.href = show.url;
+          link.textContent = 'More details';
+          link.target = '_blank';
+          article.appendChild(link);
+
+          if (show.image?.medium) {
+            const image = document.createElement('img');
+            image.src = show.image.medium;
+            image.alt = show.name;
+            article.appendChild(image);
+          }
+          
+          if (show.summary) {
+            const summary = document.createElement('div');
+            summary.innerHTML = show.summary; // Huom! HTML, ei textContent
+            article.appendChild(summary);
+          }
+
+          resultsDiv.appendChild(article);
+        });
+
+      } catch (error) {
+        console.error('Fetch error:', error);
+      }
+    });
+  </script>
+
+</body>
+</html>
